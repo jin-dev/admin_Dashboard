@@ -2,9 +2,11 @@ import React, { useState, useCallback } from 'react';
 import moment from 'moment';
 import SearchBox from 'components/SearchBox';
 import ListTable from './ListTable';
+import EnrollModal from './EnrollModal';
 
 const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
   const [query, setQuery] = useState<any>({});
+  const [modalType, setModalType] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState<number>();
 
@@ -15,7 +17,7 @@ const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
       if (!inputs[key]) continue;
       if (key === 'date') {
 
-        if ( subURL === "partner/get_transactions" || subURL === "partner/get_exchanges") {
+        if (subURL === "partner/get_transactions" || subURL === "partner/get_exchanges") {
 
           if (inputs.date.length === 1) {
             result.create_date_start = moment(inputs.date[0]).format('YYYY-MM-DD');
@@ -23,19 +25,19 @@ const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
           } else {
             result.create_date_start = moment(inputs.date[0]).format('YYYY-MM-DD');
             result.create_date_end = moment(inputs.date[1]).format('YYYY-MM-DD');
-          } 
+          }
 
         } else if (subURL === "partner/get_transaction_revenue" || subURL === "partner/get_exchanges_revenue") {
-          
+
           if (inputs.date.length === 1) {
             result.done_date_start = moment(inputs.date[0]).format('YYYY-MM-DD');
             result.done_date_end = moment(inputs.date[0]).format('YYYY-MM-DD');
           } else {
             result.done_date_start = moment(inputs.date[0]).format('YYYY-MM-DD');
             result.done_date_end = moment(inputs.date[1]).format('YYYY-MM-DD');
-          } 
-          
-        }else {
+          }
+
+        } else {
           if (inputs.date.length === 1) {
             result.startDate = moment(inputs.date[0]).format('YYYY-MM-DD');
             result.endDate = moment(inputs.date[0]).format('YYYY-MM-DD');
@@ -44,7 +46,7 @@ const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
             result.endDate = moment(inputs.date[1]).format('YYYY-MM-DD');
           }
         }
-        
+
       } else if (key === 'countryId') {
         if (!inputs[key].value) continue;
         result[key] = inputs[key].value;
@@ -56,7 +58,7 @@ const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
     if (subURL !== 'partner/user') {
       //TODO
       //user partner_id로 할당하기
-     // result['partner_id'] = 2;
+      // result['partner_id'] = 2;
     }
 
     setQuery(result);
@@ -93,9 +95,22 @@ const List = ({ searchData, subURL, gubun, type, ...props }: any) => {
         columnOptions={{ create_date: { sortable: true } }}
         onSort={controlSort}
         sortServer={true}
+        showModal={showModal}
+        setShowModal={setShowModal}
+        setModalType={setModalType}
+        setUserId={setUserId}
         {...props}
         {...props.listOptions}
       />
+
+      {showModal && (
+        <EnrollModal
+          modal={showModal}
+          setModal={setShowModal}
+          userId={userId}
+          type={modalType}
+        />
+      )}
     </>
   );
 };

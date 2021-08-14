@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import { ExcelDownloader } from './ExcelDownloader';
+import { useFlag } from 'components/checkFlag/checkFlag';
 
 interface Props {
   data: dataType;
@@ -58,7 +59,7 @@ const ListTable = ({
   const skipInitialFetch = useRef(true);
   const [excelURL, setExcelURL] = useState('');
   const [refresh, setRefresh] = useState(false);
-
+  const [isButtonClicked, setIsButtonClicked] = useFlag();
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -131,6 +132,19 @@ const ListTable = ({
           };
         }
 
+        if (data.key === 'updateBtn') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '20px',
+            cell: (props: any) => (
+              <CCancelBtn onClick={() => openModal(props?.id)}>
+                Update
+              </CCancelBtn>
+            )
+          };
+        }
+
         if (data.key === 'deleteBtn') {
           return {
             selector: data.key,
@@ -173,9 +187,10 @@ const ListTable = ({
 
   useEffect(() => {
 
+    setIsButtonClicked(false);
     setRefresh(false);
     getTableList();
-  }, [limit, offset, refresh]);
+  }, [limit, offset, refresh, isButtonClicked]);
 
   useEffect(() => {
     if (skipInitialFetch.current) {
@@ -186,16 +201,25 @@ const ListTable = ({
     getTableList();
   }, [query]);
 
-  useEffect(() => {
 
-    setExcelURL('/api/v1/partner/user/excel');
 
-  }, []);
+  function openModal(id: number) {
+
+    props?.setUserId(id);
+    props?.setModalType('update');
+    props?.setShowModal(!props?.showModal);
+
+
+  }
+
 
   const renderHeader = () => (
     <div>
 
-      <CAddBtn onClick={() => console.log("add")}>
+      <CAddBtn onClick={() => {
+        props.setShowModal(!props?.showModal)
+        props?.setModalType('create');
+      }}>
         Add
       </CAddBtn>
     </div>
