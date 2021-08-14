@@ -17,6 +17,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { ExcelDownloader } from './ExcelDownloader';
 import { useFlag } from 'components/checkFlag/checkFlag';
+import { Rating } from '@material-ui/lab';
 
 interface Props {
   data: dataType;
@@ -91,8 +92,12 @@ const ListTable = ({
           key: 'username'
         },
         {
-          value: 'User-age',
-          key: 'age',
+          value: 'Performance Rate',
+          key: 'rating',
+        },
+        {
+          value: 'Permission',
+          key: 'permission'
         },
         {
           value: 'update',
@@ -122,13 +127,39 @@ const ListTable = ({
 
       const tableHeader: columnType[] = header.map((data: any) => {
         let result;
-        if (data.key.indexOf('date') > -1) {
+        if (data.key.indexOf('') > -1) {
           result = {
             selector: data.key,
             name: data.value,
-            //[백엔드 요청] 의석 실장님이 모멘트 포맷 변환 하는거 빼달라고 해서 일단 뺌 2021.04.23
+
             format: (row: any) => row[data.key],
             width: '170px',
+          };
+        }
+
+        if (data.key === 'rating') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '180px',
+            cell: (props: any) => (
+              <Rating
+                name="simple-controlled"
+                value={props?.rating}
+                readOnly
+              />
+            )
+          };
+        }
+
+        if (data.key === 'permission') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '180px',
+            cell: (props: any) => (
+              <div> {props?.permission === 1 ? 'yes' : 'no'} </div>
+            )
           };
         }
 

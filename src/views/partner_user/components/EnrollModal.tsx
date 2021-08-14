@@ -11,13 +11,15 @@ import {
     CFormGroup,
     CInput,
     CLabel,
+    CSwitch,
     CCol,
 } from '@coreui/react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useFlag } from 'components/checkFlag/checkFlag';
-
+import { Rating } from '@material-ui/lab';
+import { Hellofresh } from '@styled-icons/simple-icons';
 export default function EnrollModal({
     modal,
     setModal,
@@ -36,6 +38,8 @@ export default function EnrollModal({
     const { register, errors, handleSubmit } = useForm();
     const [isButtonClicked, setIsButtonClicked] = useFlag();
 
+    const [rating, setRating] = useState(0);
+    const [permission, setPermission] = useState(false);
     const [groupInfo, setGroupInfo] = useState({
         ...rowInfo
     })
@@ -54,6 +58,8 @@ export default function EnrollModal({
 
         params = {
             ...modalData,
+            rating: rating,
+            permission: permission ? 1 : 0,
         };
 
 
@@ -93,6 +99,7 @@ export default function EnrollModal({
 
 
 
+
     return (
         <Fragment>
             <CModal show={modal} onClose={() => setModal(!modal)} size="">
@@ -120,17 +127,46 @@ export default function EnrollModal({
 
                             <CFormGroup row>
                                 <CCol md="3">
-                                    <CLabel htmlFor="user-name">User Age</CLabel>
+                                    <CLabel htmlFor="user-name">Performance Rating</CLabel>
                                 </CCol>
                                 <CCol xs="12" md="9">
-                                    <CInput
+
+                                    <Rating
                                         innerRef={register}
-                                        type="input"
-                                        id="age"
-                                        name="age"
+                                        name="rating"
+                                        value={rating}
+                                        onChange={(event: any, newValue: any) => {
+                                            setRating(newValue);
+                                        }}
                                     />
+
+
                                 </CCol>
                             </CFormGroup>
+
+                            <CFormGroup row>
+                                <CCol md="3">
+                                    <CLabel htmlFor="user-name">Permission</CLabel>
+                                </CCol>
+                                <CCol xs="12" md="9">
+
+
+                                    <CSwitch
+                                        name="permission"
+                                        //innerRef={register}
+                                        size=""
+                                        color={'primary'}
+                                        variant="3d"
+                                        checked={permission}
+                                        onChange={(e: any) => setPermission(e?.target?.checked)}
+
+                                    />
+
+                                </CCol>
+                            </CFormGroup>
+
+
+
                         </CModalBody>
 
                         <CModalFooter>
