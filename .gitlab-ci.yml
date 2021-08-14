@@ -1,0 +1,200 @@
+stages:
+- deploy_dev
+- notify_dev
+- deploy_stage
+- notify_stage
+- deploy_A
+- notify_A
+#- deploy_B
+#- notify_B
+
+### dev admin web auto deploy ###
+dev_padmin_web_auto_deploy:
+  stage: deploy_dev
+  script:
+  - echo "Start parter-admin-web (DEV) Auto Deploy"
+  - cd /home/nkok/workspace/partner-admin-web
+  - git checkout develop
+  - git pull
+  - npm install
+  - CI=false npm run build
+  - sleep 5
+  - pm2 reload ut-partners-admin-web
+  tags:
+  - was, padmin-web, dev
+  only:
+  - develop
+
+
+### notify dev admin web ###
+notify_slack_padmin_web_dev:
+  stage: notify_dev
+  needs: [dev_padmin_web_auto_deploy]
+  script:
+  - 'curl -H "Content-Type:application/json" -X POST --data  "{
+      \"username\": \"UT-DEPLOY\",
+      \"icon_emoji\": \":rabbit:\",
+      \"attachments\": [
+          {
+              \"mrkdwn_in\": [\"text\"],
+              \"color\": \"#4793a6\",
+              \"author_name\": \"작업자 : ${GITLAB_USER_LOGIN} | ${GITLAB_USER_NAME}\",
+              \"text\": \"*APP-NAME : PARTNER-ADMIN-WEB (DEV)*\",
+              \"fields\": [
+                  {
+                      \"title\": \"Trigger source\",
+                      \"value\": \"$CI_COMMIT_SHORT_SHA\",
+                       \"short\": true
+                  },
+                  {
+                      \"title\": \"Branch\",
+                      \"value\": \"$CI_COMMIT_REF_NAME\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit message\",
+                      \"value\": \"$CI_COMMIT_MESSAGE\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit Time\",
+                      \"value\": \"$CI_COMMIT_TIMESTAMP\",
+                      \"short\": true,
+                      \"type\": \"button\"
+                  }                   
+              ],
+              \"footer\": \"$CI_PROJECT_NAME\",
+              \"footer_icon\": \"https://www.stickpng.com/assets/images/5847f997cef1014c0b5e48c1.png\",
+          }
+      ]
+  }" https://hooks.slack.com/services/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'
+  only:
+  - develop
+
+
+### stage admin web auto deploy ###
+stage_padmin_web_auto_deploy:
+  stage: deploy_stage
+  script:
+  - echo Start Partner-admin-web Auto Deploy
+  - cd /home/nkok/workspace/partner-admin-web
+  - git checkout stage
+  - git pull
+  - npm install
+  - CI=false npm run build
+  - sleep 5
+  - pm2 reload ut-partners-admin-web
+  tags:
+  - was, padmin-web, staging
+  only:
+  - stage
+
+### notify stage admin web ###
+notify_slack_padmin_web_stage:
+  stage: notify_stage
+  needs: [stage_padmin_web_auto_deploy]
+  script:
+  - 'curl -H "Content-Type:application/json" -X POST --data  "{
+      \"username\": \"UT-DEPLOY\",
+      \"icon_emoji\": \":smiley_cat:\",
+      \"attachments\": [
+          {
+              \"mrkdwn_in\": [\"text\"],
+              \"color\": \"#36a64f\",
+              \"author_name\": \"작업자 : ${GITLAB_USER_LOGIN} | ${GITLAB_USER_NAME}\",
+              \"text\": \"*APP-NAME : PARTNER-ADMIN-WEB (STAGE)*\",
+              \"fields\": [
+                  {
+                      \"title\": \"Trigger source\",
+                      \"value\": \"$CI_COMMIT_SHORT_SHA\",
+                       \"short\": true
+                  },
+                  {
+                      \"title\": \"Branch\",
+                      \"value\": \"$CI_COMMIT_REF_NAME\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit message\",
+                      \"value\": \"$CI_COMMIT_MESSAGE\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit Time\",
+                      \"value\": \"$CI_COMMIT_TIMESTAMP\",
+                      \"short\": true,
+                      \"type\": \"button\"
+                  }                   
+              ],
+              \"footer\": \"$CI_PROJECT_NAME\",
+              \"footer_icon\": \"https://www.stickpng.com/assets/images/5847f997cef1014c0b5e48c1.png\",
+          }
+      ]
+  }" https://hooks.slack.com/services/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'
+  only:
+  - stage
+
+
+
+### PROD admin web A manual deploy ###
+Production_padmin_web_A_manual_deploy:
+  stage: deploy_A
+  script:
+  - echo Start Partner-admin-web-A Auto Deploy
+  - cd /home/nkok/workspace/partner-admin-web
+  - git checkout master
+  - git pull
+  - npm install
+  - CI=false npm run build
+  - sleep 5
+  - pm2 reload ut-partners-admin-web
+  tags:
+  - b2b-api-a, padmin-web-a, master
+  when: manual
+  only:
+  - master
+
+### notify PROD admin web A ###
+notify_slack_admin_web_A_master:
+  stage: notify_A
+  needs: [Production_padmin_web_A_manual_deploy]
+  script:
+  - 'curl -H "Content-Type:application/json" -X POST --data  "{
+      \"username\": \"UT-DEPLOY\",
+      \"icon_emoji\": \":dog2:\",
+      \"attachments\": [
+          {
+              \"mrkdwn_in\": [\"text\"],
+              \"color\": \"#0000FF\",
+              \"author_name\": \"작업자 : ${GITLAB_USER_LOGIN} | ${GITLAB_USER_NAME}\",
+              \"text\": \"*APP-NAME : PARTNER-ADMIN-WEB-A (PROD)*\",
+              \"fields\": [
+                  {
+                      \"title\": \"Trigger source\",
+                      \"value\": \"$CI_COMMIT_SHORT_SHA\",
+                       \"short\": true
+                  },
+                  {
+                      \"title\": \"Branch\",
+                      \"value\": \"$CI_COMMIT_REF_NAME\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit message\",
+                      \"value\": \"$CI_COMMIT_MESSAGE\",
+                      \"short\": true
+                  },
+                  {
+                      \"title\": \"Commit Time\",
+                      \"value\": \"$CI_COMMIT_TIMESTAMP\",
+                      \"short\": true,
+                      \"type\": \"button\"
+                  }                   
+              ],
+              \"footer\": \"$CI_PROJECT_NAME\",
+              \"footer_icon\": \"https://www.stickpng.com/assets/images/5847f997cef1014c0b5e48c1.png\",
+          }
+      ]
+  }" https://hooks.slack.com/services/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'
+  only:
+  - master

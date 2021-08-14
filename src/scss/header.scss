@@ -1,0 +1,22 @@
+@import "./variables";
+
+.header {
+  background-color: var(--primary-color);
+
+}
+
+.toggle > .react-toggle-track {
+  background-color: #4d4d4d !important;
+}
+
+.toggle-icons {
+  position: absolute;
+  top: 6px;
+  left: -6px;
+  &.moon::before {
+    content: "\1F31C";
+  }
+  &.sun::before {
+    content: "\1F31E";
+  }
+}

@@ -1,0 +1,9 @@
+.ov-h {
+  overflow: hidden;
+}
+@media (min-width: 1200px) {
+  .modal-xl {
+    max-width: 1440px !important;
+    margin: 3% auto;
+  }
+}
