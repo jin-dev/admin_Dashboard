@@ -11,7 +11,7 @@ const Main = React.lazy(() => import('./views/pages/Main/Main'));
 const main = {
   path: '/',
   exact: true,
-  name: '메인',
+  name: 'main',
   component: Main,
 };
 // outbound
@@ -41,6 +41,14 @@ interface Routes {
 }
 
 const routes: Routes[] = [
+  
+  
+{
+  path: '/',
+  exact: true,
+  name: 'main',
+  component: Main,
+},
   {
     path: '/allUser',
     name: '회원현황',
@@ -49,6 +57,7 @@ const routes: Routes[] = [
     component: AllUser,
     flag: true,
   },
+
   {
     path: '/TransactionHistory',
     name: '해외 송금',

@@ -15,7 +15,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
-import { ExcelDownloader } from './ExcelDownloader';
 import { useFlag } from 'components/checkFlag/checkFlag';
 import { Rating } from '@material-ui/lab';
 import { useHistorySave } from 'components/saveHistory/saveHistory';
@@ -93,22 +92,14 @@ const ListTable = ({
           key: 'username'
         },
         {
-          value: 'Performance Rate',
-          key: 'rating',
-        },
-        {
           value: 'Permission',
           key: 'permission'
         },
         {
-          value: 'update',
-          key: 'updateBtn',
+          value: 'Select',
+          key: 'select',
         },
-
-        {
-          value: 'Deletion',
-          key: 'deleteBtn',
-        },
+        
 
       )
 
@@ -134,22 +125,7 @@ const ListTable = ({
             name: data.value,
 
             format: (row: any) => row[data.key],
-            width: '170px',
-          };
-        }
-
-        if (data.key === 'rating') {
-          return {
-            selector: data.key,
-            name: data.value,
-            maxWidth: '180px',
-            cell: (props: any) => (
-              <Rating
-                name="simple-controlled"
-                value={props?.rating}
-                readOnly
-              />
-            )
+            width: '80px',
           };
         }
 
@@ -157,38 +133,27 @@ const ListTable = ({
           return {
             selector: data.key,
             name: data.value,
-            maxWidth: '180px',
+            maxWidth: '40px',
             cell: (props: any) => (
               <div> {props?.permission === 1 ? 'yes' : 'no'} </div>
             )
           };
         }
 
-        if (data.key === 'updateBtn') {
+        if (data.key === 'select') {
           return {
             selector: data.key,
             name: data.value,
             maxWidth: '20px',
-            cell: (props: any) => (
-              <CCancelBtn onClick={() => openModal(props?.id)}>
-                Update
+            cell: (data: any) => (
+              <CCancelBtn onClick={() =>  props.selectedEmployee(data)}>
+                Select
               </CCancelBtn>
             )
           };
         }
 
-        if (data.key === 'deleteBtn') {
-          return {
-            selector: data.key,
-            name: data.value,
-            maxWidth: '20px',
-            cell: (props: any) => (
-              <CCancelBtn onClick={() => deleteUser(props?.id)}>
-                Delete
-              </CCancelBtn>
-            )
-          };
-        }
+        
 
         result = {
           selector: data.key,
@@ -234,55 +199,17 @@ const ListTable = ({
   }, [query]);
 
 
-  useEffect(() => {
-    if(historyData.type != 'admin') {
-      alert("No Employee");
-
-      history.push('/')
-    }
-
-  }, [])
 
 
-  function openModal(id: number) {
-
-    props?.setUserId(id);
-    props?.setModalType('update');
-    props?.setShowModal(!props?.showModal);
 
 
-  }
 
 
-  const renderHeader = () => (
-    <div>
-
-      <CAddBtn onClick={() => {
-        props.setShowModal(!props?.showModal)
-        props?.setModalType('create');
-      }}>
-        Add
-      </CAddBtn>
-    </div>
-  );
-
-
-  function deleteUser(id: number) {
-    axios.delete(`/api/v1/users/${id}`)
-      .then((result: any) => {
-
-
-        console.log("The result: ", result);
-        setRefresh(true);
-      }).catch((err: any) => {
-        console.log(err);
-      });
-  }
 
   return (
     <Fragment>
       <DataTable
-        title={(title === 'excel' && renderHeader()) || renderHeader()}
+        title={(title === 'Users')}
         columns={columns}
         data={list}
         onRowClicked={onRowClicked}

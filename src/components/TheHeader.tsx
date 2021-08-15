@@ -12,6 +12,7 @@ import { useHistory } from 'react-router-dom';
 import routes from 'routes';
 import Toggle from 'react-toggle';
 import 'scss/header.scss';
+import { useHistorySave } from 'components/saveHistory/saveHistory';
 //
 
 import {
@@ -34,6 +35,7 @@ import CIcon from '@coreui/icons-react';
 
 const TheHeader = () => {
   const history = useHistory();
+  const [historyData, setSearchData]: any = useHistorySave();
 
   const dispatch = useDispatch();
   const { isFetching, isError }: any = useSelector(userSelector);
@@ -71,7 +73,7 @@ const TheHeader = () => {
           <div className="container mx-auto">
             Welcome back{' '}
             <span>
-              <strong>{email} &#128515;</strong>
+              <strong>{historyData?.type} &#128515;</strong>
             </span>
           </div>
           <CButton color="info" className="mx-0 logout-btn" onClick={onLogOut}>

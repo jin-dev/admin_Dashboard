@@ -9,6 +9,7 @@ import modalReducer from './features/modal/modalSlice';
 import flagSlicerReducer from './features/flags/flagsSlice';
 
 import benefitSlicerReducer from './features/benefit/benefitSlice';
+import historySlicerReducer from './features/queryHistory/historySlice';
 
 
 export type AppThunk = ThunkAction<void, PhotoState, unknown, Action<string>>;
@@ -22,6 +23,7 @@ const store = configureStore({
     modal: modalReducer,
 
     //
+    history: historySlicerReducer,
     flag: flagSlicerReducer,
     benefit: benefitSlicerReducer,
     //
