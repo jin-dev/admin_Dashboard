@@ -4,6 +4,7 @@ import moment from 'moment';
 import { apiProvider } from 'services/modules/provider';
 import { useLoading } from 'components/Loading/Loading';
 import { Link } from 'react-router-dom';
+import { CButton, CRow, CTextarea } from '@coreui/react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -13,10 +14,11 @@ import {
 } from 'redux/features/User/UserSlice';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { addComma } from 'utils/number';
-
-import { ExcelDownloader } from '../../partner_user/components/ExcelDownloader';
-
+import axios from 'axios';
+import { ExcelDownloader } from './ExcelDownloader';
+import { useFlag } from 'components/checkFlag/checkFlag';
+import { Rating } from '@material-ui/lab';
+import { useHistorySave } from 'components/saveHistory/saveHistory';
 interface Props {
   data: dataType;
   subURL: string;
@@ -57,38 +59,49 @@ const ListTable = ({
   const [_, setLoading] = useLoading();
   const skipInitialFetch = useRef(true);
   const [excelURL, setExcelURL] = useState('');
-
+  const [refresh, setRefresh] = useState(false);
+  const [isButtonClicked, setIsButtonClicked] = useFlag();
+  const [historyData, setSearchData]: any = useHistorySave();
   const history = useHistory();
   const dispatch = useDispatch();
 
   const getTableList = async () => {
     setLoading(true);
     try {
-      const {
-        data: {
-          tableListEntity : {
-          tableCount,
-          tableData: listData,
-          tableMetaData: { header: headerMeta },
-        }},
-        code,
-      } = await apiProvider.get(subURL, {
+      const data = await apiProvider.get(subURL, {
         gubun: gubun,
         type: type,
         ...query,
-        partner_id: sessionStorage.getItem('partner_id'),
         offset,
         limit,
       });
 
       //health Check --> if 900 --> log out
-      if (code === 900) {
-        setLoading(false);
-        dispatch(logoutUser());
-        history.push('/login');
-      }
 
-      let header = [...headerMeta];
+
+      console.log("The data: ", data);
+
+      let header = [];
+
+      header.push(
+        {
+          value: 'ID',
+          key: 'id'
+        },
+        {
+          value: 'User',
+          key: 'username'
+        },
+        {
+          value: 'feedback',
+          key: 'feedback'
+        },
+        {
+          value: 'updateFeedBack',
+          key: 'feedBtn'
+        }
+
+      )
 
       if (customColumnEntries && Array.isArray(customColumnEntries)) {
         header = header.concat(customColumnEntries);
@@ -106,54 +119,31 @@ const ListTable = ({
 
       const tableHeader: columnType[] = header.map((data: any) => {
         let result;
-        if (data.key.indexOf('date') > -1) {
+        if (data.key.indexOf('') > -1) {
           result = {
             selector: data.key,
             name: data.value,
-            //[백엔드 요청] 의석 실장님이 모멘트 포맷 변환 하는거 빼달라고 해서 일단 뺌 2021.04.23
+
             format: (row: any) => row[data.key],
             width: '170px',
           };
         }
-        if (data.value === '고객번호') {
-          result = {
-            selector: data.key,
-            name: data.value,
-            width: '160px',
-          };
-        }
-        if (data.value === '송금번호') {
-          result = {
-            selector: data.key,
-            name: data.value,
-            width: '190px',
-          };
-        }
-        if (data.value === '거절사유') {
-          result = {
-            selector: data.key,
-            name: data.value,
-            width: '700px',
-          };
-        }
 
-        if (data.key === 'from_amount')
-        return {
-          selector: data.key,
-          name: data.value,
-          width: '140px',
-          cell: (props: any) => addComma(props.from_amount, 0, false),
-        };
-
-        if (data.key === 'to_amount')
-        return {
-          selector: data.key,
-          name: data.value,
-          width: '140px',
-          cell: (props: any) => addComma(props.to_amount, 2, false),
-        };
 
     
+        if (data.key === 'feedBtn') {
+          return {
+            selector: data.key,
+            name: data.value,
+           
+            cell: (props: any) => (
+              <CCancelBtn onClick={() => opendFeedModal(props)}>
+                Feedback
+              </CCancelBtn>
+            )
+          };
+        }
+
         result = {
           selector: data.key,
           name: data.value,
@@ -164,22 +154,29 @@ const ListTable = ({
         return result;
       });
 
-      setList(listData ?? []);
-      totalCount !== tableCount && setTotalCount(tableCount);
+      //      setList(listData ?? []);
+      // totalCount !== tableCount && setTotalCount(tableCount);
+
+      setList(data);
+      setTotalCount(data?.length);
+
       columns.length === 0 && setColumns(tableHeader);
     } catch (err) {
       setList([]);
       setLoading(false);
-     // dispatch(logoutUser());
-     // history.push('/login');
+      // dispatch(logoutUser());
+      // history.push('/login');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+
+    setIsButtonClicked(false);
+    setRefresh(false);
     getTableList();
-  }, [limit, offset]);
+  }, [limit, offset, refresh, isButtonClicked]);
 
   useEffect(() => {
     if (skipInitialFetch.current) {
@@ -190,30 +187,44 @@ const ListTable = ({
     getTableList();
   }, [query]);
 
-  useEffect(() => {
-   if (subURL === 'partner/get_transactions') {
-      setExcelURL('/api/v1/partner/get_transactions/excel');
-    } else if (subURL === 'partner/get_transaction_revenue') {
-      setExcelURL('/api/v1/partner/get_transactions_revenue/excel');
-    } else if (subURL === 'partner/get_exchanges') {
-      setExcelURL('/api/v1/partner/get_exchanges/excel');
-    } else {
-      setExcelURL('/api/v1/partner/get_transactions_revenue/excel');
-    }
-  }, []); 
+
+  function opendFeedModal( info : any) {
+
+    
+    props?.setUserId(info);
+    props?.setModalType("feedback");
+    props?.setShowModal(!props?.showModal);
+
+
+  }
+
+  
+
 
   const renderHeader = () => (
     <div>
 
-      { subURL =="partner/user" ? null : 
-       <ExcelDownloader
-        excelURL={excelURL}
-        query={query}
-        buttonName="Excel Exporter"
-        buttonColor="success"
-      /> }
+      <CAddBtn onClick={() => {
+        props.setShowModal(!props?.showModal)
+        props?.setModalType('create');
+      }}>
+        Add
+      </CAddBtn>
     </div>
   );
+
+
+  function deleteUser(id: number) {
+    axios.delete(`/api/v1/users/${id}`)
+      .then((result: any) => {
+
+
+        console.log("The result: ", result);
+        setRefresh(true);
+      }).catch((err: any) => {
+        console.log(err);
+      });
+  }
 
   return (
     <Fragment>
@@ -241,3 +252,29 @@ const ListTable = ({
 };
 
 export default ListTable;
+
+
+const CCancelBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #f3a42d;
+  &:hover {
+    color: #fff;
+    background-color: #bd4212;
+  }
+`;
+
+
+const CAddBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #2d47f3;
+  &:hover {
+    color: #fff;
+    background-color: #262d5c;
+  }
+`;
+
+
