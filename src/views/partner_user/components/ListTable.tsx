@@ -170,9 +170,9 @@ const ListTable = ({
             name: data.value,
             maxWidth: '20px',
             cell: (props: any) => (
-              <CCancelBtn onClick={() => openModal(props?.id)}>
+              <CUpdateBtn onClick={() => openModal(props?.id)}>
                 Update
-              </CCancelBtn>
+              </CUpdateBtn>
             )
           };
         }
@@ -236,7 +236,7 @@ const ListTable = ({
 
   useEffect(() => {
     if(historyData.type != 'admin') {
-      alert("No Employee");
+      alert("Only for Admin User");
 
       history.push('/')
     }
@@ -311,12 +311,25 @@ const CCancelBtn = styled(CButton)`
   padding: 2px 8px;
   border-radius: 4px;
   color: #fff;
+  background-color: #ad1536;
+  &:hover {
+    color: #fff;
+    background-color: #6b0d21;
+  }
+`;
+
+
+const CUpdateBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
   background-color: #f3a42d;
   &:hover {
     color: #fff;
     background-color: #bd4212;
   }
 `;
+
 
 
 const CAddBtn = styled(CButton)`

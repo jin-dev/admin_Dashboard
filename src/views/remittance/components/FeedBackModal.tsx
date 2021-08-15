@@ -88,13 +88,13 @@ export default function FeedBackModal({
 
                     <Detail>
                         <CModalHeader>
-                            <CModalTitle>{`Dear ${historyData?.username || 'emplyoee'}`}</CModalTitle>
+                            <CustomizedTitle>{`Dear ${historyData?.username || 'emplyoee'}`}</CustomizedTitle>
                         </CModalHeader>
 
                         <CModalBody>
                             <CFormGroup row>
                             <CCol md="3">
-                                    <CLabel htmlFor="user-name">FeedBack</CLabel>
+                                    <CLabel htmlFor="user-name">Feedback</CLabel>
                                 </CCol>
                                 <CCol xs="12" md="9">
     <CTextarea         innerRef={register} id="feedback" name="feedback" placeholder={`Please write some feedback for ${userId?.username || ''}`} ></CTextarea>
@@ -131,3 +131,6 @@ const Detail = styled.div`
   }
 `;
 
+const CustomizedTitle = styled(CModalTitle)`
+padding: 10px 20px;
+`

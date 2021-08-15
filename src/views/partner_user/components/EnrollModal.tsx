@@ -107,7 +107,7 @@ export default function EnrollModal({
 
                     <Detail>
                         <CModalHeader>
-                            <CModalTitle> <h3>{type === 'update' ? 'haha' : 'Add a user'}</h3></CModalTitle>
+                            <CustomizedTitle> <h3>{type === 'update' ? 'Update' : 'Add a user'}</h3></CustomizedTitle>
                         </CModalHeader>
 
                         <CModalBody>
@@ -191,3 +191,7 @@ const Detail = styled.div`
   }
 `;
 
+
+const CustomizedTitle = styled(CModalTitle)`
+padding: 10px 20px;
+`

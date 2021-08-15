@@ -12,41 +12,12 @@ const AllUser = () => {
   const searchData: (searchItemsType | searchItemsType[])[] = [
     [
       {
-        label: '가입 일시',
-        keyName: 'date',
-        type: 'DatePicker',
+        label: 'ID',
+        keyName: 'id',
       },
 
     ],
-    [
-      {
-        label: '이메일/고객관리번호',
-        keyName: 'userInfo',
-      },
-
-      {
-        label: '고객명',
-        keyName: 'krName'
-      }
-
-
-    ],
-    [
-
-      {
-        label: '국적',
-        keyName: 'countryId',
-        type: 'selectInput',
-        datalist: countries,
-      },
-
-      {
-        label: '추천코드',
-        keyName: 'recommendCodeId',
-      },
-
-
-    ],
+   
   ];
 
   return <List searchData={searchData} subURL="users/" />;

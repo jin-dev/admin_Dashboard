@@ -49,8 +49,7 @@ function Main() {
               <div className="empty-content"></div>
               <h4>Admin </h4>
               <p>
-                <span></span>
-                <span>유트랜스퍼의 TECH팀에 문의주세요.</span>
+                <span>authority : Admin, Employee Menu</span>
               </p>
               <div className="contact-btn-container">
                 <CButton
@@ -71,8 +70,8 @@ function Main() {
               <div className="empty-content"></div>
               <h4>Employee</h4>
               <p>
-                <span>제휴 및 마케팅에 도움이 필요하신가요?</span>
-                <span>유트랜스퍼의 마케팅/영업팀에 문의주세요.</span>
+                <span>authority : Only for Employee Menu</span>
+               
               </p>
               <div className="contact-btn-container">
                 <CButton

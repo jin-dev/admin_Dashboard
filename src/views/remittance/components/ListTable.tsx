@@ -1,24 +1,11 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import DataTable from 'react-data-table-component';
-import moment from 'moment';
 import { apiProvider } from 'services/modules/provider';
 import { useLoading } from 'components/Loading/Loading';
-import { Link } from 'react-router-dom';
-import { CButton, CRow, CTextarea } from '@coreui/react';
-
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  userSelector,
-  logoutUser,
-  clearState,
-} from 'redux/features/User/UserSlice';
-import { useHistory } from 'react-router-dom';
+import { CButton} from '@coreui/react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { ExcelDownloader } from './ExcelDownloader';
 import { useFlag } from 'components/checkFlag/checkFlag';
-import { Rating } from '@material-ui/lab';
-import { useHistorySave } from 'components/saveHistory/saveHistory';
+
 interface Props {
   data: dataType;
   subURL: string;
@@ -58,12 +45,8 @@ const ListTable = ({
   const [totalCount, setTotalCount] = useState(0);
   const [_, setLoading] = useLoading();
   const skipInitialFetch = useRef(true);
-  const [excelURL, setExcelURL] = useState('');
   const [refresh, setRefresh] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useFlag();
-  const [historyData, setSearchData]: any = useHistorySave();
-  const history = useHistory();
-  const dispatch = useDispatch();
 
   const getTableList = async () => {
     setLoading(true);
@@ -76,11 +59,7 @@ const ListTable = ({
         limit,
       });
 
-      //health Check --> if 900 --> log out
-
-
-      console.log("The data: ", data);
-
+ 
       let header = [];
 
       header.push(
@@ -190,46 +169,20 @@ const ListTable = ({
 
   function opendFeedModal( info : any) {
 
-    
     props?.setUserId(info);
     props?.setModalType("feedback");
     props?.setShowModal(!props?.showModal);
-
 
   }
 
   
 
 
-  const renderHeader = () => (
-    <div>
-
-      <CAddBtn onClick={() => {
-        props.setShowModal(!props?.showModal)
-        props?.setModalType('create');
-      }}>
-        Add
-      </CAddBtn>
-    </div>
-  );
-
-
-  function deleteUser(id: number) {
-    axios.delete(`/api/v1/users/${id}`)
-      .then((result: any) => {
-
-
-        console.log("The result: ", result);
-        setRefresh(true);
-      }).catch((err: any) => {
-        console.log(err);
-      });
-  }
 
   return (
     <Fragment>
       <DataTable
-        title={(title === 'excel' && renderHeader()) || renderHeader()}
+        title={`Feedback`}
         columns={columns}
         data={list}
         onRowClicked={onRowClicked}

@@ -9,9 +9,9 @@ const TransactionHistory = () => {
   const searchData: (searchItemsType | searchItemsType[])[] = [
     [
       {
-        label: '가입 일시',
-        keyName: 'date',
-        type: 'DatePicker',
+        label: 'ID',
+        keyName: 'id',
+       
       },
 
     ],

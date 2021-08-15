@@ -54,7 +54,7 @@ function selectedEmployee(info : any) {
 
                     <Detail>
                         <CModalHeader>
-                            <CModalTitle> <h3> Employees List</h3></CModalTitle>
+                            <CustomizedTitle> <h3> Employees List</h3></CustomizedTitle>
                         </CModalHeader>
 
                         <CModalBody>
@@ -86,6 +86,10 @@ function selectedEmployee(info : any) {
         </Fragment>
     );
 }
+
+const CustomizedTitle = styled(CModalTitle)`
+padding: 10px 20px;
+`
 
 const Detail = styled.div`
   header {

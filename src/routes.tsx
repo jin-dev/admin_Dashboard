@@ -48,25 +48,31 @@ const routes: Routes[] = [
 },
   {
     path: '/allUser',
-    name: '회원현황',
-    title: '회원현황',
-    depth: [],
+    name: 'Admin Menu',
+    title: 'Admin Menu',
+    depth: [
+      {
+        path: '/allUser',
+        subtitle: 'Performance Review',
+      },
+     
+    ],
     component: AllUser,
     flag: true,
   },
 
   {
     path: '/TransactionHistory',
-    name: '해외 송금',
+    name: 'Employee Menu',
 
     depth: [
       {
         path: '/TransactionHistory',
-        subtitle: '해외 송금',
+        subtitle: 'User FeedBack',
       },
      
     ],
-    title: '해외 송금',
+    title: 'Employee Menu',
     flag: true,
     component: TransactionHistory,
   },

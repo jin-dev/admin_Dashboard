@@ -200,7 +200,7 @@ function SearchBox(props: Props) {
             </CCardBody>
             <CCardFooter align="right">
               <CButton type="submit" size="sm" color="primary">
-                <CIcon name="cil-scrubber" /> Submit
+                <CIcon name="cil-scrubber" /> Search
               </CButton>
               <CButton
                 type="reset"
