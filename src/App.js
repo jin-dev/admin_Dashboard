@@ -11,22 +11,14 @@ import ReduxModal from 'components/ReduxModal';
 const TheLayout = React.lazy(() => import('./components/TheLayout'));
 
 // Pages
-const Login = React.lazy(() => import('./views/pages/login/Login'));
-const Register = React.lazy(() => import('./views/pages/register/Register'));
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
 
 const App = () => {
-  // Dashboard 들어가는 route ('/')를 protected routes로 설정
-  // token 없으면 login으로 리다이렉트 시키기
 
   const dispatch = useDispatch();
   const { loading, errors } = useSelector(photoSelector);
 
-
-
-  //<PrivateRoute exact component={TheLayout} path="/"/> 권한별 라우팅
-  // <Route path="/"  render={props => ( isAuthenticated() ? <TheLayout {...props}/> : <Redirect to='/login' /> )} />
   return (
     <HashRouter>
       <React.Suspense fallback={loading}>

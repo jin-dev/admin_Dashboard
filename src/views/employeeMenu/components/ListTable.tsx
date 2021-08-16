@@ -1,32 +1,12 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import DataTable from 'react-data-table-component';
-import moment from 'moment';
 import { apiProvider } from 'services/modules/provider';
 import { useLoading } from 'components/Loading/Loading';
-import { Link } from 'react-router-dom';
-
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  userSelector,
-  logoutUser,
-  clearState,
-} from 'redux/features/User/UserSlice';
-import { useHistory } from 'react-router-dom';
+import { CButton} from '@coreui/react';
 import styled from 'styled-components';
-
-import {
-  CButton,
-  CRow,
-  CCol,
-  CForm,
-  CFormGroup,
-  CFormText,
-  CInput,
-  CLabel,
-  CTextarea,
-} from '@coreui/react';
-import { ExcelDownloader } from './ExcelDownloader';
-
+import { useFlag } from 'components/checkFlag/checkFlag';
+import { useHistorySave } from 'components/saveHistory/saveHistory';
+import { useHistory } from 'react-router-dom';
 interface Props {
   data: dataType;
   subURL: string;
@@ -66,22 +46,14 @@ const ListTable = ({
   const [totalCount, setTotalCount] = useState(0);
   const [_, setLoading] = useLoading();
   const skipInitialFetch = useRef(true);
-  const [excelURL, setExcelURL] = useState('');
-
+  const [refresh, setRefresh] = useState(false);
+  const [isButtonClicked, setIsButtonClicked] = useFlag();
+  const [historyData, setSearchData]: any = useHistorySave();
   const history = useHistory();
-  const dispatch = useDispatch();
-
   const getTableList = async () => {
     setLoading(true);
     try {
-      const {
-        data: {
-          tableCount,
-          tableData: listData,
-          tableMetaData: { header: headerMeta },
-        },
-        code,
-      } = await apiProvider.get(subURL, {
+      const data = await apiProvider.get(subURL, {
         gubun: gubun,
         type: type,
         ...query,
@@ -89,14 +61,28 @@ const ListTable = ({
         limit,
       });
 
-      //health Check --> if 900 --> log out
-      if (code === 900) {
-        setLoading(false);
-        dispatch(logoutUser());
-        history.push('/login');
-      }
+ 
+      let header = [];
 
-      let header = [...headerMeta];
+      header.push(
+        {
+          value: 'ID',
+          key: 'id'
+        },
+        {
+          value: 'User',
+          key: 'username'
+        },
+        {
+          value: 'feedback',
+          key: 'feedback'
+        },
+        {
+          value: 'updateFeedBack',
+          key: 'feedBtn'
+        }
+
+      )
 
       if (customColumnEntries && Array.isArray(customColumnEntries)) {
         header = header.concat(customColumnEntries);
@@ -114,27 +100,28 @@ const ListTable = ({
 
       const tableHeader: columnType[] = header.map((data: any) => {
         let result;
-        if (data.key.indexOf('date') > -1) {
+        if (data.key.indexOf('') > -1) {
           result = {
             selector: data.key,
             name: data.value,
-            //[백엔드 요청] 의석 실장님이 모멘트 포맷 변환 하는거 빼달라고 해서 일단 뺌 2021.04.23
+
             format: (row: any) => row[data.key],
             width: '170px',
           };
         }
-        if (data.value === '고객번호') {
-          result = {
+
+
+    
+        if (data.key === 'feedBtn') {
+          return {
             selector: data.key,
             name: data.value,
-            width: '160px',
-          };
-        }
-        if (data.value === '거절사유') {
-          result = {
-            selector: data.key,
-            name: data.value,
-            width: '700px',
+           
+            cell: (props: any) => (
+              <CCancelBtn onClick={() => opendFeedModal(props)}>
+                Feedback
+              </CCancelBtn>
+            )
           };
         }
 
@@ -148,22 +135,39 @@ const ListTable = ({
         return result;
       });
 
-      setList(listData ?? []);
-      totalCount !== tableCount && setTotalCount(tableCount);
+      //      setList(listData ?? []);
+      // totalCount !== tableCount && setTotalCount(tableCount);
+
+      setList(data);
+      setTotalCount(data?.length);
+
       columns.length === 0 && setColumns(tableHeader);
     } catch (err) {
       setList([]);
       setLoading(false);
-      dispatch(logoutUser());
-      history.push('/login');
+      // dispatch(logoutUser());
+      // history.push('/login');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if(historyData?.type == 'employee' && historyData?.permission == 0) {
+      alert("you have no permission to enter this menu");
+
+      history.push('/')
+    }
+
+  }, [])
+
+
+  useEffect(() => {
+
+    setIsButtonClicked(false);
+    setRefresh(false);
     getTableList();
-  }, [limit, offset]);
+  }, [limit, offset, refresh, isButtonClicked]);
 
   useEffect(() => {
     if (skipInitialFetch.current) {
@@ -174,27 +178,23 @@ const ListTable = ({
     getTableList();
   }, [query]);
 
-  const renderHeader = () => (
-    <div>
-      <ExcelDownloader
-        excelURL={excelURL}
-        query={query}
-        buttonName="Excel Exporter"
-        buttonColor="success"
-      />
-      <ExcelDownloader
-        excelURL={excelURL}
-        query={query}
-        buttonName="대량 이체파일 생성"
-        buttonColor="primary"
-      />
-    </div>
-  );
+
+  function opendFeedModal( info : any) {
+
+    props?.setUserId(info);
+    props?.setModalType("feedback");
+    props?.setShowModal(!props?.showModal);
+
+  }
+
+  
+
+
 
   return (
     <Fragment>
       <DataTable
-        title={(title === 'excel' && renderHeader()) || renderHeader()}
+        title={`Feedback`}
         columns={columns}
         data={list}
         onRowClicked={onRowClicked}
@@ -211,16 +211,35 @@ const ListTable = ({
         onChangePage={pageNo => setOffset(limit * (pageNo - 1))}
         {...props}
       />
+
     </Fragment>
   );
 };
 
 export default ListTable;
 
-const SpaceRow = styled.div`
-  display: flex;
-  width: 95%;
-  align-items: center;
-  margin-left: 15px;
-  margin-right: 0px;
+
+const CCancelBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #f3a42d;
+  &:hover {
+    color: #fff;
+    background-color: #bd4212;
+  }
 `;
+
+
+const CAddBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #2d47f3;
+  &:hover {
+    color: #fff;
+    background-color: #262d5c;
+  }
+`;
+
+

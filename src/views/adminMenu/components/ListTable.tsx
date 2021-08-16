@@ -2,10 +2,14 @@ import React, { useState, useEffect, useRef, Fragment } from 'react';
 import DataTable from 'react-data-table-component';
 import { apiProvider } from 'services/modules/provider';
 import { useLoading } from 'components/Loading/Loading';
-import { CButton} from '@coreui/react';
+import { CButton, CRow, CTextarea } from '@coreui/react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 import { useFlag } from 'components/checkFlag/checkFlag';
-
+import { Rating } from '@material-ui/lab';
+import { useHistorySave } from 'components/saveHistory/saveHistory';
 interface Props {
   data: dataType;
   subURL: string;
@@ -47,6 +51,9 @@ const ListTable = ({
   const skipInitialFetch = useRef(true);
   const [refresh, setRefresh] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useFlag();
+  const [historyData, setSearchData]: any = useHistorySave();
+  const history = useHistory();
+
 
   const getTableList = async () => {
     setLoading(true);
@@ -59,7 +66,8 @@ const ListTable = ({
         limit,
       });
 
- 
+      //health Check --> if 900 --> log out
+
       let header = [];
 
       header.push(
@@ -72,13 +80,22 @@ const ListTable = ({
           key: 'username'
         },
         {
-          value: 'feedback',
-          key: 'feedback'
+          value: 'Performance Rate',
+          key: 'rating',
         },
         {
-          value: 'updateFeedBack',
-          key: 'feedBtn'
-        }
+          value: 'Permission',
+          key: 'permission'
+        },
+        {
+          value: 'update',
+          key: 'updateBtn',
+        },
+
+        {
+          value: 'Deletion',
+          key: 'deleteBtn',
+        },
 
       )
 
@@ -108,16 +125,53 @@ const ListTable = ({
           };
         }
 
-
-    
-        if (data.key === 'feedBtn') {
+        if (data.key === 'rating') {
           return {
             selector: data.key,
             name: data.value,
-           
+            maxWidth: '180px',
             cell: (props: any) => (
-              <CCancelBtn onClick={() => opendFeedModal(props)}>
-                Feedback
+              <Rating
+                name="simple-controlled"
+                value={props?.rating}
+                readOnly
+              />
+            )
+          };
+        }
+
+        if (data.key === 'permission') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '180px',
+            cell: (props: any) => (
+              <div> {props?.permission === 1 ? 'yes' : 'no'} </div>
+            )
+          };
+        }
+
+        if (data.key === 'updateBtn') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '20px',
+            cell: (props: any) => (
+              <CUpdateBtn onClick={() => openModal(props?.id)}>
+                Update
+              </CUpdateBtn>
+            )
+          };
+        }
+
+        if (data.key === 'deleteBtn') {
+          return {
+            selector: data.key,
+            name: data.value,
+            maxWidth: '20px',
+            cell: (props: any) => (
+              <CCancelBtn onClick={() => deleteUser(props?.id)}>
+                Delete
               </CCancelBtn>
             )
           };
@@ -133,8 +187,6 @@ const ListTable = ({
         return result;
       });
 
-      //      setList(listData ?? []);
-      // totalCount !== tableCount && setTotalCount(tableCount);
 
       setList(data);
       setTotalCount(data?.length);
@@ -143,8 +195,6 @@ const ListTable = ({
     } catch (err) {
       setList([]);
       setLoading(false);
-      // dispatch(logoutUser());
-      // history.push('/login');
     } finally {
       setLoading(false);
     }
@@ -167,22 +217,55 @@ const ListTable = ({
   }, [query]);
 
 
-  function opendFeedModal( info : any) {
+  useEffect(() => {
+    if(historyData.type != 'admin') {
+      alert("Only for Admin User");
 
-    props?.setUserId(info);
-    props?.setModalType("feedback");
+      history.push('/')
+    }
+
+  }, [])
+
+
+  function openModal(id: number) {
+
+    props?.setUserId(id);
+    props?.setModalType('update');
     props?.setShowModal(!props?.showModal);
+
 
   }
 
-  
+
+  const renderHeader = () => (
+    <div>
+
+      <CAddBtn onClick={() => {
+        props.setShowModal(!props?.showModal)
+        props?.setModalType('create');
+      }}>
+        Add
+      </CAddBtn>
+    </div>
+  );
 
 
+  function deleteUser(id: number) {
+    axios.delete(`/api/v1/users/${id}`)
+      .then((result: any) => {
+
+
+        console.log("The result: ", result);
+        setRefresh(true);
+      }).catch((err: any) => {
+        console.log(err);
+      });
+  }
 
   return (
     <Fragment>
       <DataTable
-        title={`Feedback`}
+        title={(title === 'excel' && renderHeader()) || renderHeader()}
         columns={columns}
         data={list}
         onRowClicked={onRowClicked}
@@ -211,12 +294,25 @@ const CCancelBtn = styled(CButton)`
   padding: 2px 8px;
   border-radius: 4px;
   color: #fff;
+  background-color: #ad1536;
+  &:hover {
+    color: #fff;
+    background-color: #6b0d21;
+  }
+`;
+
+
+const CUpdateBtn = styled(CButton)`
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
   background-color: #f3a42d;
   &:hover {
     color: #fff;
     background-color: #bd4212;
   }
 `;
+
 
 
 const CAddBtn = styled(CButton)`

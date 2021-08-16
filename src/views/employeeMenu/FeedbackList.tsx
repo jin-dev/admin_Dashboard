@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useCommonApi } from 'hooks/useCommonApi';
 import { searchItemsType } from 'types/definedType';
 import List from './components/List'
 
-const TransactionHistory = () => {
+const FeedbackList = () => {
 
   
   const searchData: (searchItemsType | searchItemsType[])[] = [
@@ -21,4 +20,4 @@ const TransactionHistory = () => {
 
   return <List searchData={searchData} subURL="users/" />;
 };
-export default TransactionHistory;
+export default FeedbackList;

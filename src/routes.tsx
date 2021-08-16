@@ -3,27 +3,11 @@ import React from 'react';
 
 //Jin's Code
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
-
-//Main
+// 3 pages for the homework
 const Main = React.lazy(() => import('./views/pages/Main/Main'));
-
-const main = {
-  path: '/',
-  exact: true,
-  name: 'main',
-  component: Main,
-};
-// outbound
-
-const Contact_us = React.lazy(() => import('./views/contact_us/index'));
-
-// [파트너] 회원 현황
-const AllUser = React.lazy(() => import('./views/partner_user/AllUser'));
-
-
-const TransactionHistory = React.lazy(
-  () => import('./views/remittance/TransactionHistory'),
+const AllUser = React.lazy(() => import('./views/adminMenu/AllUser'));
+const FeedbackList = React.lazy(
+  () => import('./views/employeeMenu/FeedbackList'),
 );
 
 
@@ -37,6 +21,10 @@ interface Routes {
   flag?: boolean;
 }
 
+
+
+
+//routing for pages above
 const routes: Routes[] = [
   
   
@@ -62,19 +50,19 @@ const routes: Routes[] = [
   },
 
   {
-    path: '/TransactionHistory',
+    path: '/FeedbackList',
     name: 'Employee Menu',
 
     depth: [
       {
-        path: '/TransactionHistory',
+        path: '/FeedbackList',
         subtitle: 'User FeedBack',
       },
      
     ],
     title: 'Employee Menu',
     flag: true,
-    component: TransactionHistory,
+    component: FeedbackList,
   },
 
   

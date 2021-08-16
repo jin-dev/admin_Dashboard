@@ -5,23 +5,10 @@ import styled from 'styled-components';
 import { useHistorySave } from 'components/saveHistory/saveHistory';
 import ListModal from './components/ListModal';
 function Main() {
-  useEffect(() => {
-    console.log('[[[MAIn page]]]');
-    getSession();
-  }, []);
+ 
 
   const [historyData, setSearchData]: any = useHistorySave();
   const [showModal, setShowModal] = useState(false);
-
-  const getSession = async () => {
-    const response = await apiProvider
-      .get('partner/partnerinfosession')
-      .then((res: any) => {
-        console.log('HAHA');
-        sessionStorage.setItem('partner_id', res?.partnerid);
-        return res;
-      });
-  };
 
   return (
 <Fragment>
@@ -53,8 +40,7 @@ function Main() {
               </p>
               <div className="contact-btn-container">
                 <CButton
-                  className="btn-success"
-                  name="devteam"
+                   className="btn-info"
                   onClick={() => setSearchData({
                     ['type']: 'admin',
                   })}
@@ -75,8 +61,8 @@ function Main() {
               </p>
               <div className="contact-btn-container">
                 <CButton
-                  name="marketer"
-                  className="btn-success"
+               
+                  className="btn-info"
                   onClick={() => setShowModal(!showModal)}
                 
                 >
@@ -137,7 +123,7 @@ const Styles = styled.div`
       background-color: white;
       .empty-content {
         height: 25px;
-        background-color: rgba(0, 0, 128, 0.2);
+        background-color: rgba(46, 132, 230);
       }
     }
     .contact-btn-container {
@@ -148,7 +134,7 @@ const Styles = styled.div`
         margin-top: 2rem;
         padding: 0.5rem 1.5rem;
         border-radius: 50px;
-        background-color: rgba(106,53,156);
+        background-color: rgba(52, 85, 207);
         position: absolute;
         bottom: 15px;
     }
