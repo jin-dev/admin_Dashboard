@@ -75,9 +75,7 @@ function selectedEmployee(info : any) {
                             <CButton color="primary" onClick={() => setModal(!modal)}>
                                 Close
                             </CButton>
-                            <CButton type="submit" color="primary">
-                                Enroll
-                            </CButton>
+                           
                         </CModalFooter>
                     </Detail>
 

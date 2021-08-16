@@ -106,7 +106,7 @@ const ListTable = ({
             name: data.value,
 
             format: (row: any) => row[data.key],
-            width: '170px',
+            width: '250px',
           };
         }
 

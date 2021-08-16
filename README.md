@@ -18,7 +18,7 @@ Navigate to [http://localhost:3000](http://localhost:3000). The app will automat
 Here is the core parts for this homework
 
 ```
-ut-admin-react (with Core UI)
+JinWoo-Park-Homework (with Core UI)
 ├── public/          #static files
 │   └── index.html   #html template
 │
