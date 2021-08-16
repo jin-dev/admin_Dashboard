@@ -157,7 +157,7 @@ const ListTable = ({
             name: data.value,
             maxWidth: '20px',
             cell: (props: any) => (
-              <CUpdateBtn onClick={() => openModal(props?.id)}>
+              <CUpdateBtn onClick={() => openModal(props)}>
                 Update
               </CUpdateBtn>
             )
@@ -227,9 +227,9 @@ const ListTable = ({
   }, [])
 
 
-  function openModal(id: number) {
+  function openModal(info: any) {
 
-    props?.setUserId(id);
+    props?.setUserId(info);
     props?.setModalType('update');
     props?.setShowModal(!props?.showModal);
 

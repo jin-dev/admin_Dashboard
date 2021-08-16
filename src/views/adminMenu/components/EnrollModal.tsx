@@ -30,7 +30,7 @@ export default function EnrollModal({
 }: {
     modal: boolean;
     setModal: (modal: boolean) => void;
-    userId?: number;
+    userId?: any;
     type?: string;
     subURL?: string;
     rowInfo?: any;
@@ -40,11 +40,22 @@ export default function EnrollModal({
 
     const [rating, setRating] = useState(0);
     const [permission, setPermission] = useState(false);
+    const [userData, setUserData] = useState<any>({})
     const [groupInfo, setGroupInfo] = useState({
         ...rowInfo
     })
 
 
+    useEffect(() => {
+        if(type === 'update') {
+        setUserData({
+            ...userId
+        });
+        setRating(userId?.rating);
+        setPermission(userId?.permission === 1 ? true : false)
+    }
+    }, [])
+    
     const onModalSubmit = (modalData?: any) => {
         let validCheck = false;
         let URL = '/api/v1/users/';
@@ -53,7 +64,7 @@ export default function EnrollModal({
 
 
         if (type === 'update') {
-            URL = `/api/v1/users/${userId}`
+            URL = `/api/v1/users/${userId.id}`
         }
 
         params = {
@@ -118,9 +129,14 @@ export default function EnrollModal({
                                 <CCol xs="12" md="9">
                                     <CInput
                                         innerRef={register}
+                                        value = {userData?.username}
                                         type="input"
                                         id="username"
                                         name="username"
+                                        onChange={(e : any) => setUserData({
+                                            ...userData,
+                                            ['username'] :  e.target.value,
+                                        }) }
                                     />
                                 </CCol>
                             </CFormGroup>
@@ -174,7 +190,7 @@ export default function EnrollModal({
                                 Close
                             </CButton>
                             <CButton type="submit" color="primary">
-                                Enroll
+                                {type === 'update' ? 'Update' : 'Enroll'}
                             </CButton>
                         </CModalFooter>
                     </Detail>
