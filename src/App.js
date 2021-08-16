@@ -5,7 +5,7 @@ import { photoSelector, getPhotos } from './redux/features/photos/Photoslice';
 import { useSelector, useDispatch } from 'react-redux';
 import { userSelector } from '../src/redux/features/User/UserSlice';
 import Loading from './components/Loading/Loading';
-import ReduxModal from 'components/ReduxModal';
+
 
 // Containers
 const TheLayout = React.lazy(() => import('./components/TheLayout'));
@@ -35,7 +35,7 @@ const App = () => {
         </Switch>
       </React.Suspense>
       <Loading />
-      <ReduxModal />
+    
     </HashRouter>
   );
 };

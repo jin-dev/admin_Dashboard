@@ -96,7 +96,7 @@ export const isFinite = (str: string | number | BigNumber) => {
 };
 
 // /////////
-/* 계산용 */
+/* For calculation */
 export const sum = (a: number | string | BigNumber, b: number | string | BigNumber) => {
   const bigNumber = new BigNumber(a);
   return bigNumber.plus(b);
@@ -122,7 +122,7 @@ export const abs = (num: number | string | BigNumber) => {
   return bigNumber.absoluteValue();
 };
 
-// a: 보유금액, b: 매수/매도할 가격 c: 비율
+// a: current amount b: buy/ssell c: portation
 export const availableValue = (a: number, b: number | string, percentage: number | string | BigNumber = 1) => {
   if (b === 0 || b === '0') {
     return 0;
