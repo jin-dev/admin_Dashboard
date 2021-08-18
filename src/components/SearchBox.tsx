@@ -95,7 +95,7 @@ function SearchBox(props: Props) {
                 onChange={handleChange}
                 value={inputs[item.keyName] || ''}
               >
-                <option value="">전체</option>
+                <option value="">Select All</option>
                 {item.datalist.map((o: any) =>
                   typeof o === 'string' ? (
                     <option value={o}>{o}</option>
@@ -116,7 +116,7 @@ function SearchBox(props: Props) {
                 onChange={handleChange}
                 value={inputs[item.keyName] || ''}
               >
-                <option value="">전체</option>
+                <option value="">Select All</option>
                 {item.datalist.map((o: any) => (
                   <option value={o.label} key={o.label}>
                     {o.value || o.name}
